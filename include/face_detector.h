@@ -8,10 +8,8 @@ class FaceDetector
 private:
     /// Face detection network
     cv::dnn::Net network_;
-    /// Required DNN input image width
-    const int input_image_width_{300};
-    /// Required DNN input image height
-    const int input_image_height_{300};
+    /// Required DNN input image size
+    const cv::Size input_size_{300, 300};
     /// Required DNN input image blob scale
     const double scale_factor_{1.0};
     /// Mean normalization values network was trained with  
