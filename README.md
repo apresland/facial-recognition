@@ -27,14 +27,11 @@ vcpkg.exe install opencv3:x64-windows
 Navigate to the project root (where the CMakeLists.txt file is located) and initialize for x64 architecture
 Create a ```build``` directory and change into it
 ```
-chdir build
-```
-```
-cmake -A x64 ..
+cmake -A x64 -S . -B "build64"
 ```
 Then build the project (defaults to Debug)
 ```
-cmake --build ..
+cmake --build build64 --config Debug
 ```
 The executable and (required DLLs) will be found as:
 ```
