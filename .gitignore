@@ -7,6 +7,7 @@
 **/build/
 **/build64/
 **/Debug/
+**/Release/
 **/Win32/
 **/x64/
 **/face_detection.dir/

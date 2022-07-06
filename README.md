@@ -31,12 +31,14 @@ cmake -A x64 -S . -B "build64"
 ```
 Then build the project (defaults to Debug)
 ```
-cmake --build build64 --config Debug
+cmake --build build64 --config Release
 ```
 The executable and (required DLLs) will be found as:
 ```
- build/Debug/face_detection.exe
+ build64/Release/face_detection.exe
  ```
+Before running copy the file ```image1.jpg``` from ```assets```. After running the file ```output.jpg``` contains the results. 
+
 ## Configuration
 The folder ```assets``` contains the DNN model files:
 * ```deploy.prototxt```
