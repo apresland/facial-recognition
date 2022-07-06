@@ -51,8 +51,6 @@ add_custom_command(TARGET face_detection POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/liblzma.dll ${CMAKE_BINARY_DIR}/Release
 )
 
-#add_dependencies(${PROJECT_NAME} CopyDebugBinaries)
-
 set(FACE_DETECTION_CONFIGURATION 
     "${PROJECT_SOURCE_DIR}/assets/deploy.prototxt")
 
