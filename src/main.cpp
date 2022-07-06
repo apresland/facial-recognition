@@ -11,7 +11,7 @@ int main()
 
     FaceDetector _detector;
 
-    cv::VideoCapture cap = cv::VideoCapture("video2.mp4");
+    cv::VideoCapture cap = cv::VideoCapture("video1.mp4");
     if ( !cap.isOpened() )
     {
         std::cout << "Cannot open the video file. \n";

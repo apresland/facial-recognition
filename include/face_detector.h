@@ -17,6 +17,9 @@ private:
     /// Face detection confidence threshold
     const float confidence_threshold_ {0.6f};
 
+    /// Benchmarking timer
+    cv::TickMeter timeRecorder_;
+
 public:
     explicit FaceDetector();
     std::vector<cv::Rect> detect(const cv::Mat& frame);

@@ -1,4 +1,5 @@
 #include <face_detector.h>
+#include <iostream>
 
 FaceDetector::FaceDetector() 
 {
@@ -27,10 +28,24 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
         false);
 
     network_.setInput(input_blob);
-    cv::Mat detection = network_.forward("detection_out");
-    cv::Mat detection_matrix(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());
 
-    std::vector<cv::Rect> rectangles;
+    timeRecorder_.reset();
+    timeRecorder_.start();
+    cv::Mat detection = network_.forward(); 
+    timeRecorder_.stop();
+
+    std::cout 
+        << " Forward propogation took: " 
+        << timeRecorder_.getTimeMilli()
+        << "ms" << std::endl;
+
+    cv::Mat detection_matrix(
+        detection.size[2],
+        detection.size[3], 
+        CV_32F, 
+        detection.ptr<float>());
+
+    std::vector<cv::Rect> rectangles;    
     for (int i = 0; i < detection_matrix.rows; i++) {
 
         float confidence = detection_matrix.at<float>(i, 2);
@@ -45,6 +60,6 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
 
         rectangles.emplace_back(xbl, ybl, (xtr - xbl), (ytr - ybl));
     }
-
+    
     return rectangles;
 }
