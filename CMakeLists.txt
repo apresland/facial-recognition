@@ -17,7 +17,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
-add_custom_target(CopyDebugBinaries
+add_custom_command(TARGET face_detection POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_cored.dll ${CMAKE_BINARY_DIR}/Debug
     COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_dnnd.dll ${CMAKE_BINARY_DIR}/Debug
     COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_imgprocd.dll ${CMAKE_BINARY_DIR}/Debug
@@ -34,7 +34,24 @@ add_custom_target(CopyDebugBinaries
     COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/liblzma.dll ${CMAKE_BINARY_DIR}/Debug
 )
 
-add_dependencies(${PROJECT_NAME} CopyDebugBinaries)
+add_custom_command(TARGET face_detection POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_cored.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_dnnd.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_imgprocd.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_highguid.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_imgcodecsd.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/opencv_videoiod.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/zlibd1.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/libprotobufd.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/jpeg62.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/tiffd.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/libpng16d.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/webpdecoder.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/webp.dll ${CMAKE_BINARY_DIR}/Release
+    COMMAND ${CMAKE_COMMAND} -E copy ${OpenCV_BIN}/debug/bin/liblzma.dll ${CMAKE_BINARY_DIR}/Release
+)
+
+#add_dependencies(${PROJECT_NAME} CopyDebugBinaries)
 
 set(FACE_DETECTION_CONFIGURATION 
     "${PROJECT_SOURCE_DIR}/assets/deploy.prototxt")
