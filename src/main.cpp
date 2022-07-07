@@ -7,12 +7,17 @@
 int main()
 {
     cv::namedWindow("detections", CV_WINDOW_AUTOSIZE);
-    //cv::Mat frame = cv::imread("input1.jpg");
     cv::TickMeter timeRecorder_;
 
-    FaceDetector _detector;
+    cv::VideoWriter video 
+        = cv::VideoWriter(
+            "output.mp4", 10, 17, 
+            cv::Size(mask_width, mask_height));
 
-    cv::VideoCapture cap = cv::VideoCapture("2021-12-25 14-26-21_ET879_cut_2.mp4");
+    cv::VideoCapture cap 
+        = cv::VideoCapture(
+            "2021-12-25 14-26-21_ET879_cut_3.mp4");
+
     if ( !cap.isOpened() )
     {
         std::cout
@@ -23,19 +28,35 @@ int main()
     int N{0};
     int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-    cv::VideoWriter video("output.mp4", 10, 17, cv::Size(frame_width, frame_height));
+
+    const int mask_x = 500;
+    const int mask_y = 50;
+    const int mask_width = 1000;
+    const int mask_height = 1000;
+
+    const cv::Rect mask(
+        mask_x,
+        mask_y,
+        mask_width,
+        mask_height
+        );
+
+
+    FaceDetector _detector;
 
     while (1) {
 
         if (gLOGGING) {
             std::cout
-                << "\n Processing Frame: " << ++N << "\n";
+                << "\n Processing Frame: " << ++N << " (" << frame_width << "x" << frame_height <<  ")\n";
             timeRecorder_.reset();
             timeRecorder_.start();
         }
 
         cv::Mat frame;
         cap >> frame;
+        cv::Mat cropped_frame 
+            = frame(mask);
 
         if (gLOGGING) {        
             timeRecorder_.stop();
@@ -56,9 +77,7 @@ int main()
             timeRecorder_.start();
         }
 
-        cv::Mat normalized_frame;
-        normalize(frame, normalized_frame, 0, 255, cv::NORM_MINMAX);
-        auto rectangles = _detector.detect(normalized_frame);
+        auto rectangles = _detector.detect(cropped_frame);
         
         if (gLOGGING) {
             timeRecorder_.stop();
@@ -74,11 +93,12 @@ int main()
         }
 
         for(const auto & r : rectangles) {
-            cv::rectangle(normalized_frame, r, cv::Scalar(255, 0, 255), 2);
+            cv::rectangle(cropped_frame, r, cv::Scalar(255, 0, 255), 2);
         }
 
-        video.write(normalized_frame);
-        cv::imshow("detections", normalized_frame);
+        video.write(cropped_frame);
+        cv::imshow("detections", cropped_frame);
+
         if (gLOGGING) {
             timeRecorder_.stop();
             std::cout 

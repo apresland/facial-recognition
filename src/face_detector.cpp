@@ -19,6 +19,9 @@ FaceDetector::FaceDetector()
 
 std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
 {
+    int height = frame.rows;
+    int width = frame.cols;
+
     cv::Mat input_blob = cv::dnn::blobFromImage(
         frame, 
         scale_factor_, 

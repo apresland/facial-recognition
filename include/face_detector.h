@@ -3,7 +3,7 @@
 #include <vector>
 #include <opencv2/dnn.hpp>
 
-constexpr bool gLOGGING = false;
+constexpr bool gLOGGING = true;
 
 class FaceDetector
 {
