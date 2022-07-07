@@ -34,10 +34,12 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
     cv::Mat detection = network_.forward(); 
     timeRecorder_.stop();
 
-    std::cout 
-        << " Forward propogation took: " 
-        << timeRecorder_.getTimeMilli()
-        << "ms" << std::endl;
+    if (gLOGGING) {
+        std::cout 
+            << " - forward propogation took: " 
+            << timeRecorder_.getTimeMilli()
+            << "ms" << std::endl;
+    }
 
     cv::Mat detection_matrix(
         detection.size[2],

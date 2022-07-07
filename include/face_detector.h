@@ -3,6 +3,8 @@
 #include <vector>
 #include <opencv2/dnn.hpp>
 
+constexpr bool gLOGGING = false;
+
 class FaceDetector
 {
 private:
@@ -15,7 +17,7 @@ private:
     /// Mean normalization values network was trained with  
     const cv::Scalar mean_values_{104.0, 177.0, 123.0};
     /// Face detection confidence threshold
-    const float confidence_threshold_ {0.6f};
+    const float confidence_threshold_ {0.5f};
 
     /// Benchmarking timer
     cv::TickMeter timeRecorder_;
