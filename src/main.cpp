@@ -62,13 +62,6 @@ int main()
 
         ++N;
 
-        if (gLOGGING) {
-            std::cout
-                << "\n Processing Frame: " << N << " (" << frame_width << "x" << frame_height <<  ")\n";
-            timeRecorder_.reset();
-            timeRecorder_.start();
-        }
-
         cv::Mat frame;
         cap >> frame;
         if (frame.empty()) {
@@ -81,6 +74,13 @@ int main()
         // Preprocess masked frame
         // ------------------------------------------------
 
+        if (gLOGGING) {
+            std::cout
+                << "\n Processing Frame: " << N << " (" << frame_width << "x" << frame_height <<  ")\n";
+            timeRecorder_.reset();
+            timeRecorder_.start();
+        }
+
         cv::Mat preprocessed_frame
             = _preprocessor.preprocess(frame(mask));
 
@@ -92,14 +92,14 @@ int main()
                 << "ms" << std::endl;
         }
 
+        // -------------------------------------------------
+        // Periodically detected faces in preprocessed frame
+        // -------------------------------------------------
+
         if (gLOGGING) {
             timeRecorder_.reset();
             timeRecorder_.start();
         }
-
-        // -------------------------------------------------
-        // Periodically detected faces in preprocessed frame
-        // -------------------------------------------------
 
         std::vector<cv::Rect> detected_faces;
         if (detection_count == 0) {
@@ -119,14 +119,14 @@ int main()
                 << "ms" << std::endl;
         }
 
+        // ----------------------------------------------
+        // Track faces between detections
+        // ----------------------------------------------
+
         if (gLOGGING) {
             timeRecorder_.reset();
             timeRecorder_.start();
         }
-
-        // ----------------------------------------------
-        // Track faces between detections
-        // ----------------------------------------------
 
         if ( ! detected_faces.empty()) {
             tracking_face = true;
@@ -143,10 +143,23 @@ int main()
         } else {
             tracking_face = false;
         }
-        
+
+         if (gLOGGING) {
+            timeRecorder_.stop();
+            std::cout 
+                << " - tracking took: "
+                << timeRecorder_.getTimeMilli()
+                << "ms" << std::endl;
+        }
+
         // ----------------------------------------------
         // Visualize face detections
         // ----------------------------------------------
+
+        if (gLOGGING) {
+            timeRecorder_.reset();
+            timeRecorder_.start();
+        }
 
         cv::rectangle(
             preprocessed_frame, tracked_face, 
