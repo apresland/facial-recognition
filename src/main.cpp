@@ -71,9 +71,15 @@ int main()
 
         cv::Mat frame;
         cap >> frame;
+        if (frame.empty()) {
+            std::cout
+             << "\n Cannot read the video file. \n";
+            break;
+        }
 
-        //cv::Mat cropped_frame 
-        //    = frame(mask);
+        // ------------------------------------------------
+        // Preprocess masked frame
+        // ------------------------------------------------
 
         cv::Mat preprocessed_frame
             = _preprocessor.preprocess(frame(mask));
@@ -86,16 +92,14 @@ int main()
                 << "ms" << std::endl;
         }
 
-        if (frame.empty()) {
-            std::cout
-             << "\n Cannot read the video file. \n";
-            break;
-        }
-
         if (gLOGGING) {
             timeRecorder_.reset();
             timeRecorder_.start();
         }
+
+        // -------------------------------------------------
+        // Periodically detected faces in preprocessed frame
+        // -------------------------------------------------
 
         std::vector<cv::Rect> detected_faces;
         if (detection_count == 0) {
@@ -120,6 +124,10 @@ int main()
             timeRecorder_.start();
         }
 
+        // ----------------------------------------------
+        // Track faces between detections
+        // ----------------------------------------------
+
         if ( ! detected_faces.empty()) {
             tracking_face = true;
             cv::Rect2d detected_face = detected_faces[0];
@@ -129,18 +137,25 @@ int main()
             undetected_count++;
         }
         
-        if (true == tracking_face && undetected_count < 10) {
-
-            cv::Rect2d tracked_face;     
+        cv::Rect2d tracked_face;  
+        if (true == tracking_face && undetected_count < 10) {   
             _tracker.track(preprocessed_frame, tracked_face);
-            cv::rectangle(preprocessed_frame, tracked_face, cv::Scalar(0, 255, 0), 2);
-
         } else {
             tracking_face = false;
         }
         
+        // ----------------------------------------------
+        // Visualize face detections
+        // ----------------------------------------------
+
+        cv::rectangle(
+            preprocessed_frame, tracked_face, 
+            cv::Scalar(0, 255, 0), 2);
+        
         for(const auto & face : detected_faces) {
-            cv::rectangle(preprocessed_frame, face, cv::Scalar(255, 0, 255), 2);
+            cv::rectangle(
+                preprocessed_frame, face, 
+                cv::Scalar(255, 0, 255), 2);
         }
 
         video.write(preprocessed_frame);
@@ -153,6 +168,10 @@ int main()
                 << timeRecorder_.getTimeMilli()
                 << "ms" << std::endl;
         }
+
+        // ----------------------------------------------
+        // Check for quit signal
+        // ----------------------------------------------
 
         // Press ESC on keyboard to exit
         char c=(char)cv::waitKey(1);
