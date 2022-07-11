@@ -50,13 +50,12 @@ int main()
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
     FacePreprocessor _preprocessor;
-
     FaceDetector _detector;
-    int detection_count = 0;
-
     FaceTracker _tracker;
-    bool tracking_face = false;
+
+    int detection_count = 0;
     int undetected_count = 0;
+    bool tracking_face = false;
 
     while (1) {
 
@@ -81,8 +80,11 @@ int main()
             timeRecorder_.start();
         }
 
-        cv::Mat preprocessed_frame
-            = _preprocessor.preprocess(frame(mask));
+        cv::Mat raw_frame
+            = frame(mask);
+
+        cv::Mat preprocessed
+            = _preprocessor.preprocess(raw_frame);
 
         if (gLOGGING) {        
             timeRecorder_.stop();
@@ -104,7 +106,7 @@ int main()
         std::vector<cv::Rect> detected_faces;
         if (detection_count == 0) {
             detected_faces
-                = _detector.detect(preprocessed_frame);
+                = _detector.detect(preprocessed);
         }
 
         if (++detection_count >= 5) {
@@ -131,7 +133,7 @@ int main()
         if ( ! detected_faces.empty()) {
             tracking_face = true;
             cv::Rect2d detected_face = detected_faces[0];
-            _tracker.init(preprocessed_frame, detected_face);
+            _tracker.init(preprocessed, detected_face);
             undetected_count = 0;
         } else {
             undetected_count++;
@@ -139,7 +141,7 @@ int main()
         
         cv::Rect2d tracked_face;  
         if (true == tracking_face && undetected_count < 10) {   
-            _tracker.track(preprocessed_frame, tracked_face);
+            _tracker.track(preprocessed, tracked_face);
         } else {
             tracking_face = false;
         }
@@ -162,17 +164,17 @@ int main()
         }
 
         cv::rectangle(
-            preprocessed_frame, tracked_face, 
+            raw_frame, tracked_face, 
             cv::Scalar(0, 255, 0), 2);
         
         for(const auto & face : detected_faces) {
             cv::rectangle(
-                preprocessed_frame, face, 
+                raw_frame, face, 
                 cv::Scalar(255, 0, 255), 2);
         }
 
-        video.write(preprocessed_frame);
-        cv::imshow("detections", preprocessed_frame);
+        video.write(raw_frame);
+        cv::imshow("detections", raw_frame);
 
         if (gLOGGING) {
             timeRecorder_.stop();
