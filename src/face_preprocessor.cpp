@@ -1,5 +1,6 @@
 #include "face_preprocessor.h"
 #include "face_context.h"
+#include <iostream>
 
 /**
 Convert the color space of the image from RGB
@@ -20,10 +21,16 @@ cv::Mat FacePreprocessor::preprocess(const cv::Mat& frame)
 
 cv::Mat FacePreprocessor::equalizeHistogramAdaptive(const cv::Mat& inputImage)
 {
+    if (gLOGGING) {
+        timeRecorder_.reset();
+        timeRecorder_.start();
+    }
+
+    cv::Mat result;
+
     if(inputImage.channels() >= 3)
     {
         cv::Mat ycrcb;
-        cv::Mat result;
 
         std::vector<cv::Mat> channels;
         cv::cvtColor(inputImage, ycrcb, CV_BGR2YCrCb);
@@ -34,9 +41,15 @@ cv::Mat FacePreprocessor::equalizeHistogramAdaptive(const cv::Mat& inputImage)
         cv::merge(channels,ycrcb);
 
         cv::cvtColor(ycrcb, result, CV_YCrCb2BGR);
-
-        return result;
     }
 
-    return cv::Mat();
+    if (gLOGGING) {        
+        timeRecorder_.stop();
+        std::cout 
+            << " - preprocssing took: "
+            << timeRecorder_.getTimeMilli()
+            << "ms" << std::endl;
+    }
+
+    return result;
 }

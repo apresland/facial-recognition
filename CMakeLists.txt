@@ -11,7 +11,9 @@ add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/face_preprocessor.cpp
     src/face_detector.cpp 
-    src/face_tracker.cpp)
+    src/face_tracker.cpp 
+    src/face_merging.cpp 
+    src/face_annotator.cpp)
 
 find_package(OpenCV CONFIG REQUIRED)
 

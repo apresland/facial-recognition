@@ -20,6 +20,11 @@ FaceDetector::FaceDetector()
 
 std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
 {
+    if (gLOGGING) {
+        timeRecorder_.reset();
+        timeRecorder_.start();
+    }
+
     int height = frame.rows;
     int width = frame.cols;
 
@@ -32,18 +37,8 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
         false);
 
     network_.setInput(input_blob);
-
-    timeRecorder_.reset();
-    timeRecorder_.start();
-    cv::Mat detection = network_.forward(); 
-    timeRecorder_.stop();
-
-    if (gLOGGING) {
-        std::cout 
-            << " - forward propogation took: " 
-            << timeRecorder_.getTimeMilli()
-            << "ms" << std::endl;
-    }
+    cv::Mat detection 
+        = network_.forward(); 
 
     cv::Mat detection_matrix(
         detection.size[2],
@@ -67,5 +62,13 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
         rectangles.emplace_back(xbl, ybl, (xtr - xbl), (ytr - ybl));
     }
     
+    if (gLOGGING) {
+        timeRecorder_.stop();
+        std::cout 
+            << " - face detection took: "
+            << timeRecorder_.getTimeMilli()
+            << "ms" << std::endl;
+    }
+
     return rectangles;
 }

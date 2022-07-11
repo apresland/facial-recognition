@@ -16,6 +16,19 @@ void FaceTracker::deinit()
 
 void FaceTracker::track(const cv::Mat& frame, cv::Rect2d& tracked_face)
 {
+    if (gLOGGING) {
+        timeRecorder_.reset();
+        timeRecorder_.start();
+    }
+
     tracker_
         ->update(frame, tracked_face);
+
+    if (gLOGGING) {
+        timeRecorder_.stop();
+        std::cout 
+            << " - tracking took: "
+            << timeRecorder_.getTimeMilli()
+            << "ms" << std::endl;
+    }      
 }
