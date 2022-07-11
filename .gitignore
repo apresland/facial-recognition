@@ -12,6 +12,4 @@
 **/x64/
 **/face_detection.dir/
 
-
-
 cmake_install.cmake

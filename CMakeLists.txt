@@ -7,7 +7,11 @@ set( OpenCV_BIN  "C:/vcpkg/installed/x64-windows" )
 
 # project declaration
 project(face_detection LANGUAGES CXX)
-add_executable(${PROJECT_NAME} src/main.cpp src/face_detector.cpp)
+add_executable(${PROJECT_NAME} 
+    src/main.cpp 
+    src/face_preprocessor.cpp
+    src/face_detector.cpp 
+    src/face_tracker.cpp)
 
 find_package(OpenCV CONFIG REQUIRED)
 
