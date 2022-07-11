@@ -5,7 +5,7 @@
 class FacePreprocessor
 {
 private:
-    cv::Mat equalizeIntensity(const cv::Mat& inputImage);
+    cv::Mat equalizeHistogramAdaptive(const cv::Mat& inputImage);
 public:
     FacePreprocessor() = default;
     ~FacePreprocessor() = default;

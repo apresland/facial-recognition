@@ -13,12 +13,12 @@ cv::Mat FacePreprocessor::preprocess(const cv::Mat& frame)
     }
     
     cv::Mat output
-        = equalizeIntensity(frame);
+        = equalizeHistogramAdaptive(frame);
 
     return output;
 }
 
-cv::Mat FacePreprocessor::equalizeIntensity(const cv::Mat& inputImage)
+cv::Mat FacePreprocessor::equalizeHistogramAdaptive(const cv::Mat& inputImage)
 {
     if(inputImage.channels() >= 3)
     {
@@ -27,8 +27,10 @@ cv::Mat FacePreprocessor::equalizeIntensity(const cv::Mat& inputImage)
 
         std::vector<cv::Mat> channels;
         cv::cvtColor(inputImage, ycrcb, CV_BGR2YCrCb);
-        cv::split(ycrcb,channels);
-        cv::equalizeHist(channels[0], channels[0]);
+        cv::split(ycrcb, channels);
+        cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
+        clahe->setClipLimit(4);
+        clahe->apply(channels[0], channels[0]);
         cv::merge(channels,ycrcb);
 
         cv::cvtColor(ycrcb, result, CV_YCrCb2BGR);

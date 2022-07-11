@@ -1,4 +1,4 @@
 #pragma once
 constexpr bool gLOGGING = true;
-constexpr bool gPREPROCESS = false;
+constexpr bool gPREPROCESS = true;
 constexpr bool gTRACKING = false;
