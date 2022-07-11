@@ -1,5 +1,5 @@
 #include "face_preprocessor.h"
-#include "context.h"
+#include "face_context.h"
 
 /**
 Convert the color space of the image from RGB

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "context.h"
+#include "face_context.h"
 #include "face_preprocessor.h"
 #include "face_detector.h"
 #include "face_tracker.h"

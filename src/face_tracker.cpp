@@ -1,5 +1,5 @@
 #include "face_tracker.h"
-#include "context.h"
+#include "face_context.h"
 
 void FaceTracker::init(const cv::Mat& frame, cv::Rect2d& tracked_face) 
 {
