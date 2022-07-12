@@ -2,9 +2,10 @@
 #include "face_context.h"
 
 #include <iostream>
+
 #include <opencv2/imgproc.hpp>
 
-cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, const cv::Rect& detection)
+cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, std::vector<cv::Rect2d>& detections)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -14,9 +15,11 @@ cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, const cv::Rect& dete
     cv::Mat output_frame 
         = input_frame.clone();
 
-    cv::rectangle(
-        output_frame, detection, 
-        cv::Scalar(0, 255, 0), 2);
+    for (const auto & detection : detections) {
+        cv::rectangle(
+            output_frame, detection, 
+            cv::Scalar(0, 255, 0), 2);
+    }
 
     if (gLOGGING) {
         timeRecorder_.stop();

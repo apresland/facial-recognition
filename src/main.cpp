@@ -3,6 +3,7 @@
 #include <opencv2/tracking.hpp>
 
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <future>
 #include <thread>
@@ -63,18 +64,22 @@ int main()
     FaceMerging _merging;
     FaceAnnotator _annotator;
 
+    std::vector<cv::Rect> detections;
+    std::future<std::vector<cv::Rect>> detections_future;
+
     while (1) {
 
         ++frame_id;
-
         cv::Mat frame;
         cap >> frame;
-        
-        if (frame.empty()) {
-            std::cout
-             << "\n Cannot read the video file. \n";
-            break;
-        } else {
+
+        // ----------------------------------------------
+        // Log frame info
+        // ----------------------------------------------
+
+        if (gLOGMAIN) {
+            timeRecorder_.reset();
+            timeRecorder_.start();
             std::cout
                 << "\n Processing Frame: " 
                 << frame_id << " (" 
@@ -83,7 +88,15 @@ int main()
         }
 
         // ------------------------------------------------
-        // Preprocess masked frame
+        // Select frame for detection/tracking
+        // ------------------------------------------------
+
+        bool detect_more_faces 
+            = _selector.select(
+                    frame_id);
+
+        // ------------------------------------------------
+        // Preprocess frame
         // ------------------------------------------------
 
         cv::Mat raw_frame
@@ -93,35 +106,31 @@ int main()
             = _preprocessor
                 .preprocess(raw_frame);
 
-        // -------------------------------------------------
-        // Detect faces in frames
-        // -------------------------------------------------
-
-        std::vector<cv::Rect> detections; 
-        if( _selector.select(frame_id)) {
-            auto detector_future = _detector.detectAsync(preprocessed);
-            std::future_status status;
-            do {
-                status = detector_future.wait_for(5ms);
-            } while (status != std::future_status::ready);
-            detections = detector_future.get();
+        if(detect_more_faces) {
+            detections_future 
+                = _detector.detectAsync(
+                    preprocessed);
         } 
 
         // ----------------------------------------------
         // Track faces in frame
         // ----------------------------------------------
 
-        if ( ! detections.empty()) {
-            cv::Rect2d detection = detections[0];
-            _tracker.init(preprocessed, detection);
-        }
-
-        cv::Rect2d updated_detection;  
-        if ( _tracker.is_tracking()) {
-            _tracker.track(
+        auto tracked_detections 
+            = _tracker.track(
                 preprocessed,
-                updated_detection);
-        } 
+                detections);
+
+        // -------------------------------------------------
+        // Detect faces in frames
+        // -------------------------------------------------
+        
+        detections.clear();
+        if(detect_more_faces) {
+            detections_future.wait();
+            detections 
+                = detections_future.get();
+        }
 
         // ----------------------------------------------
         // Merge face detections
@@ -136,7 +145,22 @@ int main()
         auto annotated_frame
             = _annotator.annotate(
                 raw_frame,
-                updated_detection);
+                tracked_detections);
+
+        // ----------------------------------------------
+        // Log performance
+        // ----------------------------------------------
+
+        if (gLOGMAIN) {
+            timeRecorder_.stop();
+            std::cout 
+                << " - total time: "
+                << timeRecorder_.getTimeMilli()
+                << "ms ("
+                << detect_more_faces
+                << ")" 
+                << std::endl;
+        }
 
         // ----------------------------------------------
         // Visualize face detections

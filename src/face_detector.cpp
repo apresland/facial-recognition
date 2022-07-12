@@ -75,7 +75,7 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
     if (gLOGGING) {
         timeRecorder_.stop();
         std::cout 
-            << " - face detection took: "
+            << " - detection took: "
             << timeRecorder_.getTimeMilli()
             << "ms" << std::endl;
     }

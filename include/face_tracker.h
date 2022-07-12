@@ -20,7 +20,7 @@ private:
 public:
     explicit FaceTracker() = default;
     void init(const cv::Mat& frame, cv::Rect2d& roi);
-    void track(const cv::Mat& frame, cv::Rect2d& roi);
+    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect>& detections);
     void deinit();
 
     bool is_tracking();
