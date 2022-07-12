@@ -26,13 +26,13 @@ void FaceDetector::detectAsync(const cv::Mat& frame)
             });
 }
 
-std::vector<cv::Rect> FaceDetector::getAsync() 
+std::vector<cv::Rect2d> FaceDetector::getAsync() 
 {
     detections_future_.wait();
     return detections_future_.get();   
 }
 
-std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
+std::vector<cv::Rect2d> FaceDetector::detect(const cv::Mat& frame)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -60,7 +60,7 @@ std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
         CV_32F, 
         detection.ptr<float>());
 
-    std::vector<cv::Rect> rectangles;    
+    std::vector<cv::Rect2d> rectangles;    
     for (int i = 0; i < detection_matrix.rows; i++) {
 
         float confidence = detection_matrix.at<float>(i, 2);

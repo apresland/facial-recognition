@@ -21,13 +21,13 @@ private:
 
     std::future<std::vector<cv::Rect2d>> detections_future_;
     void init(const cv::Mat& frame, cv::Rect2d& roi);    
-    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect> detections);
+    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect2d> detections);
     bool is_tracking();
 
 
 public:
     explicit FaceTracker() = default;
 
-    void trackAsync(const cv::Mat& frame, std::vector<cv::Rect> detections);
+    void trackAsync(const cv::Mat& frame, std::vector<cv::Rect2d> detections);
     std::vector<cv::Rect2d> getAsync();
 };

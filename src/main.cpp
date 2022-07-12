@@ -64,10 +64,8 @@ int main()
     FaceMerging _merging;
     FaceAnnotator _annotator;
 
-    std::vector<cv::Rect> detections;
-    //std::future<std::vector<cv::Rect>> detections_future;
-
-    std::vector<cv::Rect2d> tracked_detections;
+    std::vector<cv::Rect2d> detected;
+    std::vector<cv::Rect2d> tracked;
 
     while (1) {
 
@@ -109,6 +107,10 @@ int main()
             = _preprocessor
                 .preprocess(raw_frame);
 
+        // -------------------------------------------------
+        // Detect faces in frames
+        // -------------------------------------------------
+      
         if(detect_more_faces) {
             _detector
                 .detectAsync(
@@ -119,33 +121,32 @@ int main()
         // Track faces in frame
         // ----------------------------------------------
 
-        tracked_detections.clear();
         _tracker
             .trackAsync(
                 preprocessed,
-                detections);
-
-        // -------------------------------------------------
-        // Detect faces in frames
-        // -------------------------------------------------
-        
-        detections.clear();
-        if(detect_more_faces) {
-            detections
-                = _detector
-                    .getAsync();
-        }
+                detected);
 
         // ----------------------------------------------
         // Merge face detections
         // ----------------------------------------------
 
-        tracked_detections 
+        detected.clear();
+        if(detect_more_faces) {
+            detected
+                = _detector
+                    .getAsync();
+        }
+
+        tracked.clear();
+        tracked 
             = _tracker
                 .getAsync();
 
-
-        // TODO: Merger detected and tracked faces based on timestamp (they should run parallel).
+        std::vector<cv::Rect2d> merged
+            = _merging
+                .merge(
+                    detected,
+                    tracked);
 
         // ----------------------------------------------
         // Annotate face detections
@@ -155,7 +156,7 @@ int main()
             = _annotator
                 .annotate(
                     raw_frame,
-                    tracked_detections);
+                    merged);
 
         // ----------------------------------------------
         // Log performance

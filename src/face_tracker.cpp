@@ -15,7 +15,7 @@ void FaceTracker::init(const cv::Mat& frame, cv::Rect2d& tracked_face)
         = true;
 }
 
-void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<cv::Rect> detections)
+void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<cv::Rect2d> detections)
 {
     detections_future_
         = std::async(std::launch::async, [=](){
@@ -30,7 +30,7 @@ std::vector<cv::Rect2d> FaceTracker::getAsync()
 }
 
 std::vector<cv::Rect2d> FaceTracker::track(const cv::Mat& frame, 
-                                           std::vector<cv::Rect> detections)
+                                           std::vector<cv::Rect2d> detections)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
