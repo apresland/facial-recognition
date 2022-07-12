@@ -65,7 +65,9 @@ int main()
     FaceAnnotator _annotator;
 
     std::vector<cv::Rect> detections;
-    std::future<std::vector<cv::Rect>> detections_future;
+    //std::future<std::vector<cv::Rect>> detections_future;
+
+    std::vector<cv::Rect2d> tracked_detections;
 
     while (1) {
 
@@ -117,11 +119,11 @@ int main()
         // Track faces in frame
         // ----------------------------------------------
 
-        auto tracked_detections 
-            = _tracker
-                .track(
-                    preprocessed,
-                    detections);
+        tracked_detections.clear();
+        _tracker
+            .trackAsync(
+                preprocessed,
+                detections);
 
         // -------------------------------------------------
         // Detect faces in frames
@@ -137,6 +139,11 @@ int main()
         // ----------------------------------------------
         // Merge face detections
         // ----------------------------------------------
+
+        tracked_detections 
+            = _tracker
+                .getAsync();
+
 
         // TODO: Merger detected and tracked faces based on timestamp (they should run parallel).
 

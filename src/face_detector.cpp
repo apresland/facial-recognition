@@ -21,7 +21,7 @@ FaceDetector::FaceDetector()
 void FaceDetector::detectAsync(const cv::Mat& frame)
 {
     detections_future_
-        = std::async(std::launch::async, [this, frame](){
+        = std::async(std::launch::async, [&](){
             return detect(frame);
             });
 }

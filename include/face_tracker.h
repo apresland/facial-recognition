@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <future>
+#include <thread>
 #include <opencv2/core.hpp>
 #include <opencv2/tracking.hpp>
 
@@ -17,11 +19,15 @@ private:
     int skip_frames_ = 0;
     bool track_face_ = false;
 
+    std::future<std::vector<cv::Rect2d>> detections_future_;
+    void init(const cv::Mat& frame, cv::Rect2d& roi);    
+    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect> detections);
+    bool is_tracking();
+
+
 public:
     explicit FaceTracker() = default;
-    void init(const cv::Mat& frame, cv::Rect2d& roi);
-    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect>& detections);
-    void deinit();
 
-    bool is_tracking();
+    void trackAsync(const cv::Mat& frame, std::vector<cv::Rect> detections);
+    std::vector<cv::Rect2d> getAsync();
 };
