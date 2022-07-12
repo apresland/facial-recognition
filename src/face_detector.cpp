@@ -18,6 +18,16 @@ FaceDetector::FaceDetector()
     }
 }
 
+std::future<std::vector<cv::Rect>> FaceDetector::detectAsync(const cv::Mat& frame)
+{
+    std::future<std::vector<cv::Rect>> future 
+        = std::async(std::launch::async, [this, frame](){
+            return detect(frame);
+            });
+
+    return future;
+}
+
 std::vector<cv::Rect> FaceDetector::detect(const cv::Mat& frame)
 {
     if (gLOGGING) {

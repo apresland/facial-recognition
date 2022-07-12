@@ -4,13 +4,19 @@
 
 #include <iostream>
 #include <vector>
+#include <future>
+#include <thread>
+#include <chrono>
 
 #include "face_context.h"
 #include "face_preprocessor.h"
+#include "face_frame_selection.h"
 #include "face_detector.h"
 #include "face_tracker.h"
 #include "face_merging.h"
 #include "face_annotator.h"
+
+using namespace std::chrono_literals;
 
 int main()
 {
@@ -28,7 +34,6 @@ int main()
 
     cv::namedWindow("detections", CV_WINDOW_AUTOSIZE);
     cv::TickMeter timeRecorder_;
-
     cv::VideoCapture cap 
         = cv::VideoCapture(
             "2021-12-25 14-26-21_ET879_cut_2.mp4");
@@ -52,27 +57,11 @@ int main()
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
     FacePreprocessor _preprocessor;
+    FaceFrameSelection _selector;
     FaceDetector _detector;
     FaceTracker _tracker;
     FaceMerging _merging;
     FaceAnnotator _annotator;
-
-    // Number of frames between full face detections. The lower the number is,
-    // the more likely TrackEngine is to detect a new face as soon as it appears.
-    // The higher the number, the higher the overall performance.
-    // It is used to balance between computation performance and face
-    // detection recall.
-    constexpr int detector_step = 5;
-
-    // The frame_id when the last detection was made
-    int detector_frame_id = 0;
-
-    // If there is no detection in estimated area tracking will wait this number offrames
-    // before considering the track lost and finishing it.
-    constexpr int max_skip_frames = 10;
-    int skip_frames = 0;
-
-    bool track_face = false;
 
     while (1) {
 
@@ -99,6 +88,7 @@ int main()
 
         cv::Mat raw_frame
             = frame(mask);
+
         cv::Mat preprocessed
             = _preprocessor
                 .preprocess(raw_frame);
@@ -107,11 +97,14 @@ int main()
         // Detect faces in frames
         // -------------------------------------------------
 
-        const int frames_since_last_detection = (frame_id - detector_frame_id); 
-        std::vector<cv::Rect> detections;
-        if (frames_since_last_detection >= detector_step) {
-            detector_frame_id = frame_id;
-            detections = _detector.detect(preprocessed);
+        std::vector<cv::Rect> detections; 
+        if( _selector.select(frame_id)) {
+            auto detector_future = _detector.detectAsync(preprocessed);
+            std::future_status status;
+            do {
+                status = detector_future.wait_for(5ms);
+            } while (status != std::future_status::ready);
+            detections = detector_future.get();
         } 
 
         // ----------------------------------------------
@@ -119,20 +112,12 @@ int main()
         // ----------------------------------------------
 
         if ( ! detections.empty()) {
-            track_face = true; // found a face so track it
             cv::Rect2d detection = detections[0];
             _tracker.init(preprocessed, detection);
-            skip_frames = 0;
-        } else {
-            skip_frames++;
         }
-        
-        track_face // continue to track? 
-            =  track_face
-            && (skip_frames < max_skip_frames);
 
         cv::Rect2d updated_detection;  
-        if (track_face) {   
+        if ( _tracker.is_tracking()) {
             _tracker.track(
                 preprocessed,
                 updated_detection);

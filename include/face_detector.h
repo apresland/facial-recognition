@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <future>
+#include <thread>
+
 #include <opencv2/dnn.hpp>
 
 class FaceDetector
@@ -20,7 +23,9 @@ private:
     /// Benchmarking timer
     cv::TickMeter timeRecorder_;
 
+    std::vector<cv::Rect> detect(const cv::Mat& frame);
+
 public:
     explicit FaceDetector();
-    std::vector<cv::Rect> detect(const cv::Mat& frame);
+    std::future<std::vector<cv::Rect>> detectAsync(const cv::Mat& frame);
 };
