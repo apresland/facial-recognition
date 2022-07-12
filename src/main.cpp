@@ -1,23 +1,7 @@
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/tracking.hpp>
-
-#include <iostream>
-#include <memory>
-#include <vector>
-#include <future>
-#include <thread>
-#include <chrono>
-
 #include "face_context.h"
-#include "face_preprocessor.h"
-#include "face_frame_selection.h"
-#include "face_detector.h"
-#include "face_tracker.h"
-#include "face_merging.h"
-#include "face_annotator.h"
-
-using namespace std::chrono_literals;
+#include "face_node.h"
+#include <iostream>
+#include <opencv2/highgui.hpp>
 
 int main()
 {
@@ -25,7 +9,6 @@ int main()
     const int mask_y = 50;
     const int mask_width = 1000;
     const int mask_height = 1000;
-
     const cv::Rect mask(
         mask_x,
         mask_y,
@@ -53,25 +36,19 @@ int main()
             cv::Size(mask_width, mask_height)
             );
 
-    int frame_id{0};
     int frame_width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
     int frame_height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
-    FacePreprocessor _preprocessor;
-    FaceFrameSelection _selector;
-    FaceDetector _detector;
-    FaceTracker _tracker;
-    FaceMerging _merging;
-    FaceAnnotator _annotator;
-
-    std::vector<cv::Rect2d> detected;
-    std::vector<cv::Rect2d> tracked;
+    std::queue<cv::Mat> _image_input;
+    std::queue<cv::Mat> _image_output;
+    FaceNode _node(_image_input, _image_output);
 
     while (1) {
 
-        ++frame_id;
         cv::Mat frame;
         cap >> frame;
+
+        _image_input.push(frame(mask));
 
         // ----------------------------------------------
         // Log frame info
@@ -81,82 +58,12 @@ int main()
             timeRecorder_.reset();
             timeRecorder_.start();
             std::cout
-                << "\n Processing Frame: " 
-                << frame_id << " (" 
-                << frame_width << "x" 
+                << "\n Processing Frame:("  
+                << frame_width << " x " 
                 << frame_height <<  ")\n";
         }
 
-        // ------------------------------------------------
-        // Select frame for detection/tracking
-        // ------------------------------------------------
-
-        bool detect_more_faces 
-            = _selector
-                .select(
-                    frame_id);
-
-        // ------------------------------------------------
-        // Preprocess frame
-        // ------------------------------------------------
-
-        cv::Mat raw_frame
-            = frame(mask);
-
-        cv::Mat preprocessed
-            = _preprocessor
-                .preprocess(raw_frame);
-
-        // -------------------------------------------------
-        // Detect faces in frames
-        // -------------------------------------------------
-      
-        if(detect_more_faces) {
-            _detector
-                .detectAsync(
-                    preprocessed);
-        } 
-
-        // ----------------------------------------------
-        // Track faces in frame
-        // ----------------------------------------------
-
-        _tracker
-            .trackAsync(
-                preprocessed,
-                detected);
-
-        // ----------------------------------------------
-        // Merge face detections
-        // ----------------------------------------------
-
-        detected.clear();
-        if(detect_more_faces) {
-            detected
-                = _detector
-                    .getAsync();
-        }
-
-        tracked.clear();
-        tracked 
-            = _tracker
-                .getAsync();
-
-        std::vector<cv::Rect2d> merged
-            = _merging
-                .merge(
-                    detected,
-                    tracked);
-
-        // ----------------------------------------------
-        // Annotate face detections
-        // ----------------------------------------------
-
-        auto annotated_frame
-            = _annotator
-                .annotate(
-                    raw_frame,
-                    merged);
+        _node.spin_once();
 
         // ----------------------------------------------
         // Log performance
@@ -167,9 +74,7 @@ int main()
             std::cout 
                 << " - total time: "
                 << timeRecorder_.getTimeMilli()
-                << "ms ("
-                << detect_more_faces
-                << ")" 
+                << "ms"
                 << std::endl;
         }
 
@@ -177,9 +82,12 @@ int main()
         // Visualize face detections
         // ----------------------------------------------
 
-        video.write(annotated_frame);
-        cv::imshow("detections", annotated_frame);
-
+        if ( ! _image_output.empty()) {
+            cv::Mat annotated = _image_output.front();
+            video.write(annotated);
+            cv::imshow("detections", annotated);
+            _image_output.pop();
+        }
         // ----------------------------------------------
         // Check for quit signal
         // ----------------------------------------------
