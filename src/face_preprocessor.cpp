@@ -31,15 +31,15 @@ cv::Mat FacePreprocessor::equalizeHistogramAdaptive(const cv::Mat& inputImage)
     if(inputImage.channels() >= 3)
     {
         cv::Mat ycrcb;
-
         std::vector<cv::Mat> channels;
         cv::cvtColor(inputImage, ycrcb, CV_BGR2YCrCb);
         cv::split(ycrcb, channels);
+
         cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
         clahe->setClipLimit(4);
         clahe->apply(channels[0], channels[0]);
-        cv::merge(channels,ycrcb);
-
+        cv::merge(channels, ycrcb);
+        
         cv::cvtColor(ycrcb, result, CV_YCrCb2BGR);
     }
 

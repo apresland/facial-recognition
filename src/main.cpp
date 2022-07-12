@@ -92,7 +92,8 @@ int main()
         // ------------------------------------------------
 
         bool detect_more_faces 
-            = _selector.select(
+            = _selector
+                .select(
                     frame_id);
 
         // ------------------------------------------------
@@ -107,8 +108,8 @@ int main()
                 .preprocess(raw_frame);
 
         if(detect_more_faces) {
-            detections_future 
-                = _detector.detectAsync(
+            _detector
+                .detectAsync(
                     preprocessed);
         } 
 
@@ -117,9 +118,10 @@ int main()
         // ----------------------------------------------
 
         auto tracked_detections 
-            = _tracker.track(
-                preprocessed,
-                detections);
+            = _tracker
+                .track(
+                    preprocessed,
+                    detections);
 
         // -------------------------------------------------
         // Detect faces in frames
@@ -127,9 +129,9 @@ int main()
         
         detections.clear();
         if(detect_more_faces) {
-            detections_future.wait();
-            detections 
-                = detections_future.get();
+            detections
+                = _detector
+                    .getAsync();
         }
 
         // ----------------------------------------------
@@ -143,9 +145,10 @@ int main()
         // ----------------------------------------------
 
         auto annotated_frame
-            = _annotator.annotate(
-                raw_frame,
-                tracked_detections);
+            = _annotator
+                .annotate(
+                    raw_frame,
+                    tracked_detections);
 
         // ----------------------------------------------
         // Log performance

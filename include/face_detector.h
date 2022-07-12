@@ -19,13 +19,18 @@ private:
     const cv::Scalar mean_values_{104.0, 177.0, 123.0};
     /// Face detection confidence threshold
     const float confidence_threshold_ {0.5f};
+    /// Face detection future (async)
+    std::future<std::vector<cv::Rect>> detections_future_;
+
 
     /// Benchmarking timer
     cv::TickMeter timeRecorder_;
+
 
     std::vector<cv::Rect> detect(const cv::Mat& frame);
 
 public:
     explicit FaceDetector();
-    std::future<std::vector<cv::Rect>> detectAsync(const cv::Mat& frame);
+    void detectAsync(const cv::Mat& frame);
+    std::vector<cv::Rect> getAsync();
 };
