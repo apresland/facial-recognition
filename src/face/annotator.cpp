@@ -4,7 +4,7 @@
 #include <opencv2/imgproc.hpp>
 
 
-cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, std::vector<cv::Rect2d>& detections)
+cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, std::vector<DetectionsDescr>& detections)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -16,7 +16,7 @@ cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, std::vector<cv::Rect
 
     for (const auto & detection : detections) {
         cv::rectangle(
-            output_frame, detection, 
+            output_frame, detection.rectangle, 
             cv::Scalar(0, 255, 0), 2);
     }
 

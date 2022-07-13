@@ -24,3 +24,11 @@ struct TrackInfo
     float detection_score{0.f};
 };
 
+struct DetectionsDescr
+{
+    TrackId track_id;
+    cv::Rect2d rectangle;
+    float score{0.f};
+};
+
+

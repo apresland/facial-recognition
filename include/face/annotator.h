@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
+#include "face/types.h"
 #include <opencv2/core.hpp>
+#include <vector>
 
 class FaceAnnotator
 {
@@ -11,5 +12,5 @@ private:
 public:
     FaceAnnotator() = default;
     ~FaceAnnotator() = default;
-    cv::Mat annotate(const cv::Mat& frame, std::vector<cv::Rect2d>& detections);
+    cv::Mat annotate(const cv::Mat& frame, std::vector<DetectionsDescr>& detections);
 };

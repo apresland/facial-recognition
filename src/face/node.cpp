@@ -87,7 +87,7 @@ void FaceNode::spin_once()
         = _tracker
             .getAsync();
 
-    std::vector<cv::Rect2d> merged
+    std::vector<DetectionsDescr> merged
         = _merging
             .merge(
                 _detected,

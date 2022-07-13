@@ -1,6 +1,8 @@
 #pragma once
 
+#include "face/types.h"
 #include <opencv2/core.hpp>
+#include <vector>
 
 class FaceMerging 
 {
@@ -10,6 +12,6 @@ private:
 public:
     FaceMerging() = default;
     ~FaceMerging() = default;
-    std::vector<cv::Rect2d> merge(std::vector<Detection> detected, 
-                                  std::vector<TrackInfo> tracked);
+    std::vector<DetectionsDescr> merge(std::vector<Detection> detected, 
+                                       std::vector<TrackInfo> tracked);
 };
