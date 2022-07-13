@@ -22,11 +22,12 @@ private:
     bool track_face_ = false;
 
     std::future<std::vector<TrackInfo>> detections_future_;
-    void init(const cv::Mat& frame, cv::Rect2d& roi);    
+    void init(const cv::Mat& frame, Detection& detection);    
     std::vector<TrackInfo> track(const cv::Mat& frame, std::vector<Detection> detections);
     bool is_tracking();
 
     uint32_t current_track_id_{0};
+    float current_score_{0.f};
 
 public:
     explicit FaceTracker() = default;

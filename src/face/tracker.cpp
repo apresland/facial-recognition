@@ -1,21 +1,28 @@
 #include "face/tracker.h"
 #include "face/context.h"
 
-void FaceTracker::init(const cv::Mat& frame, cv::Rect2d& tracked_face) 
+void FaceTracker::init(const cv::Mat& frame, Detection& detection) 
 {
     tracker_
         = cv::TrackerKCF::create();
 
     tracker_
-        ->init(frame, tracked_face);
+        ->init(frame, detection.rectangle);
+
+
+    if ( ! is_tracking() ) {
+        current_track_id_++;
+    }
+
+    current_score_
+        = detection
+            .score;
 
     skip_frames_
         = 0;
 
     track_face_
         = true;
-
-    current_track_id_++;
 }
 
 void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<Detection> detections)
@@ -41,8 +48,8 @@ std::vector<TrackInfo> FaceTracker::track(const cv::Mat& frame,
     }
 
     if ( ! detections.empty()) {
-        cv::Rect2d rectangle = detections[0].rectangle;
-        init(frame, rectangle);
+        //cv::Rect2d rectangle = detections[0].rectangle;
+        init(frame, detections[0]);
     }
 
     std::vector<TrackInfo> track_infos;
@@ -69,6 +76,8 @@ std::vector<TrackInfo> FaceTracker::track(const cv::Mat& frame,
         = current_track_id_;
     track_info.rectangle
         = rectangle;
+    track_info.score
+        = current_score_;
     track_infos
         .push_back(track_info);
 

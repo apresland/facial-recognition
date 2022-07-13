@@ -21,7 +21,7 @@ struct TrackInfo
 {
     TrackId track_id;
     cv::Rect2d rectangle;
-    float detection_score{0.f};
+    float score{0.f};
 };
 
 struct DetectionsDescr
