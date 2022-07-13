@@ -13,4 +13,3 @@ public:
     cv::Mat preprocess(const cv::Mat& frame);
 };
 
-

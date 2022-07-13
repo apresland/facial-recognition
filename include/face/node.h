@@ -5,12 +5,12 @@
 
 #include <opencv2/core.hpp>
 
-#include "face_preprocessor.h"
-#include "face_frame_selection.h"
-#include "face_detector.h"
-#include "face_tracker.h"
-#include "face_merging.h"
-#include "face_annotator.h"
+#include "face/preprocessor.h"
+#include "face/frame_selection.h"
+#include "face/detector.h"
+#include "face/tracker.h"
+#include "face/merging.h"
+#include "face/annotator.h"
 
 class FaceNode {
 
@@ -22,8 +22,8 @@ private:
     FaceMerging _merging;
     FaceAnnotator _annotator;
 
-    std::vector<cv::Rect2d> _detected;
-    std::vector<cv::Rect2d> _tracked;
+    std::vector<Detection> _detected;
+    std::vector<TrackInfo> _tracked;
     cv::TickMeter timeRecorder_;
     int _frame_id{0};
 

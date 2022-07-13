@@ -1,10 +1,11 @@
-#include "face_tracker.h"
-#include "face_context.h"
+#include "face/tracker.h"
+#include "face/context.h"
 
 void FaceTracker::init(const cv::Mat& frame, cv::Rect2d& tracked_face) 
 {
     tracker_
         = cv::TrackerKCF::create();
+
     tracker_
         ->init(frame, tracked_face);
 
@@ -13,9 +14,11 @@ void FaceTracker::init(const cv::Mat& frame, cv::Rect2d& tracked_face)
 
     track_face_
         = true;
+
+    current_track_id_++;
 }
 
-void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<cv::Rect2d> detections)
+void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<Detection> detections)
 {
     detections_future_
         = std::async(std::launch::async, [=](){
@@ -23,14 +26,14 @@ void FaceTracker::trackAsync(const cv::Mat& frame, std::vector<cv::Rect2d> detec
             });
 }
 
-std::vector<cv::Rect2d> FaceTracker::getAsync()
+std::vector<TrackInfo> FaceTracker::getAsync()
 {
     detections_future_.wait();
     return detections_future_.get();   
 }
 
-std::vector<cv::Rect2d> FaceTracker::track(const cv::Mat& frame, 
-                                           std::vector<cv::Rect2d> detections)
+std::vector<TrackInfo> FaceTracker::track(const cv::Mat& frame, 
+                                           std::vector<Detection> detections)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -38,18 +41,20 @@ std::vector<cv::Rect2d> FaceTracker::track(const cv::Mat& frame,
     }
 
     if ( ! detections.empty()) {
-        cv::Rect2d detection = detections[0];
-        init(frame, detection);
+        cv::Rect2d rectangle = detections[0].rectangle;
+        init(frame, rectangle);
     }
 
-    std::vector<cv::Rect2d> tracked_detections;
+    std::vector<TrackInfo> track_infos;
     if ( ! is_tracking()) {
-        return tracked_detections;
+        return track_infos;
     }
 
-    cv::Rect2d tracked_detection;
+    skip_frames_++;
+
+    cv::Rect2d rectangle;
     tracker_
-        ->update(frame, tracked_detection);
+        ->update(frame, rectangle);
 
     if (gLOGGING) {
         timeRecorder_.stop();
@@ -59,10 +64,15 @@ std::vector<cv::Rect2d> FaceTracker::track(const cv::Mat& frame,
             << "ms" << std::endl;
     }
 
-    skip_frames_++;
+    TrackInfo track_info;
+    track_info.track_id
+        = current_track_id_;
+    track_info.rectangle
+        = rectangle;
+    track_infos
+        .push_back(track_info);
 
-    tracked_detections.push_back(tracked_detection);
-    return tracked_detections;
+    return track_infos;
 }
 
 bool FaceTracker::is_tracking() 

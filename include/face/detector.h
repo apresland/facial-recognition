@@ -1,10 +1,10 @@
 #pragma once
 
+#include "face/types.h"
+#include <opencv2/dnn.hpp>
 #include <vector>
 #include <future>
 #include <thread>
-
-#include <opencv2/dnn.hpp>
 
 class FaceDetector
 {
@@ -20,18 +20,15 @@ private:
     /// Face detection confidence threshold
     const float confidence_threshold_ {0.5f};
     /// Face detection future (async)
-    std::future<std::vector<cv::Rect2d>> detections_future_;
-
-
+    std::future<std::vector<Detection>> detections_future_;
     /// Benchmarking timer
     cv::TickMeter timeRecorder_;
 
-
-    std::vector<cv::Rect2d> detect(const cv::Mat& frame);
+    std::vector<Detection> detect(const cv::Mat& frame);
 
 public:
     explicit FaceDetector();
 
     void detectAsync(const cv::Mat& frame);
-    std::vector<cv::Rect2d> getAsync();
+    std::vector<Detection> getAsync();
 };

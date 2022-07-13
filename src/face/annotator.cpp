@@ -1,9 +1,8 @@
-#include "face_annotator.h"
-#include "face_context.h"
-
+#include "face/annotator.h"
+#include "face/context.h"
 #include <iostream>
-
 #include <opencv2/imgproc.hpp>
+
 
 cv::Mat FaceAnnotator::annotate(const cv::Mat& input_frame, std::vector<cv::Rect2d>& detections)
 {

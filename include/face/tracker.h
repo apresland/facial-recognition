@@ -1,5 +1,6 @@
 #pragma once
 
+#include "face/types.h"
 #include <vector>
 #include <future>
 #include <thread>
@@ -9,6 +10,7 @@
 class FaceTracker
 {
 private:
+
     cv::Ptr<cv::Tracker> tracker_;
     cv::Rect2d face_;
     cv::TickMeter timeRecorder_;
@@ -19,15 +21,16 @@ private:
     int skip_frames_ = 0;
     bool track_face_ = false;
 
-    std::future<std::vector<cv::Rect2d>> detections_future_;
+    std::future<std::vector<TrackInfo>> detections_future_;
     void init(const cv::Mat& frame, cv::Rect2d& roi);    
-    std::vector<cv::Rect2d> track(const cv::Mat& frame, std::vector<cv::Rect2d> detections);
+    std::vector<TrackInfo> track(const cv::Mat& frame, std::vector<Detection> detections);
     bool is_tracking();
 
+    uint32_t current_track_id_{0};
 
 public:
     explicit FaceTracker() = default;
 
-    void trackAsync(const cv::Mat& frame, std::vector<cv::Rect2d> detections);
-    std::vector<cv::Rect2d> getAsync();
+    void trackAsync(const cv::Mat& frame, std::vector<Detection> detections);
+    std::vector<TrackInfo> getAsync();
 };

@@ -1,5 +1,5 @@
-#include "face_node.h"
-#include "face_context.h"
+#include "face/node.h"
+#include "face/context.h"
 
 #include <iostream>
 
@@ -53,7 +53,7 @@ void FaceNode::spin_once()
             .preprocess(frame);
 
     // -------------------------------------------------
-    // Detect faces in frames
+    // Detect faces in frame
     // -------------------------------------------------
     
     if(detect_more_faces) {

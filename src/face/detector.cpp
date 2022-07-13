@@ -1,5 +1,5 @@
-#include "face_detector.h"
-#include "face_context.h"
+#include "face/detector.h"
+#include "face/context.h"
 #include <iostream>
 
 FaceDetector::FaceDetector() 
@@ -26,13 +26,13 @@ void FaceDetector::detectAsync(const cv::Mat& frame)
             });
 }
 
-std::vector<cv::Rect2d> FaceDetector::getAsync() 
+std::vector<Detection> FaceDetector::getAsync() 
 {
     detections_future_.wait();
     return detections_future_.get();   
 }
 
-std::vector<cv::Rect2d> FaceDetector::detect(const cv::Mat& frame)
+std::vector<Detection> FaceDetector::detect(const cv::Mat& frame)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -60,7 +60,7 @@ std::vector<cv::Rect2d> FaceDetector::detect(const cv::Mat& frame)
         CV_32F, 
         detection.ptr<float>());
 
-    std::vector<cv::Rect2d> rectangles;    
+    std::vector<Detection> detections;    
     for (int i = 0; i < detection_matrix.rows; i++) {
 
         float confidence = detection_matrix.at<float>(i, 2);
@@ -72,8 +72,14 @@ std::vector<cv::Rect2d> FaceDetector::detect(const cv::Mat& frame)
         int ybl = static_cast<int>(detection_matrix.at<float>(i, 4) * frame.rows);
         int xtr = static_cast<int>(detection_matrix.at<float>(i, 5) * frame.cols);
         int ytr = static_cast<int>(detection_matrix.at<float>(i, 6) * frame.rows);
+        cv::Rect2d rectangle(xbl, ybl, (xtr - xbl), (ytr - ybl));
 
-        rectangles.emplace_back(xbl, ybl, (xtr - xbl), (ytr - ybl));
+        Detection detection;
+        detection.rectangle = rectangle;
+        detection.score = confidence;
+        detections.emplace_back(detection);
+
+        //rectangles.emplace_back(xbl, ybl, (xtr - xbl), (ytr - ybl));
     }
     
     if (gLOGGING) {
@@ -84,5 +90,5 @@ std::vector<cv::Rect2d> FaceDetector::detect(const cv::Mat& frame)
             << "ms" << std::endl;
     }
 
-    return rectangles;
+    return detections;
 }

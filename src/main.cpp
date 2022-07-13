@@ -1,5 +1,5 @@
-#include "face_context.h"
-#include "face_node.h"
+#include "face/face_context.h"
+#include "face/face_node.h"
 #include <iostream>
 #include <opencv2/highgui.hpp>
 

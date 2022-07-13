@@ -10,6 +10,6 @@ private:
 public:
     FaceMerging() = default;
     ~FaceMerging() = default;
-    std::vector<cv::Rect2d> merge(std::vector<cv::Rect2d> detected, 
-                                  std::vector<cv::Rect2d> tracked);
+    std::vector<cv::Rect2d> merge(std::vector<Detection> detected, 
+                                  std::vector<TrackInfo> tracked);
 };
