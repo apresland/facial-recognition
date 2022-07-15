@@ -1,5 +1,5 @@
-#include "face/face_context.h"
-#include "face/face_node.h"
+#include "face/context.h"
+#include "face/node.h"
 #include <iostream>
 #include <opencv2/highgui.hpp>
 
@@ -55,28 +55,17 @@ int main()
         // ----------------------------------------------
 
         if (gLOGMAIN) {
-            timeRecorder_.reset();
-            timeRecorder_.start();
             std::cout
                 << "\n Processing Frame:("  
                 << frame_width << " x " 
                 << frame_height <<  ")\n";
         }
 
+        // ----------------------------------------------
+        // Run detection
+        // ----------------------------------------------
+
         _node.spin_once();
-
-        // ----------------------------------------------
-        // Log performance
-        // ----------------------------------------------
-
-        if (gLOGMAIN) {
-            timeRecorder_.stop();
-            std::cout 
-                << " - total time: "
-                << timeRecorder_.getTimeMilli()
-                << "ms"
-                << std::endl;
-        }
 
         // ----------------------------------------------
         // Visualize face detections

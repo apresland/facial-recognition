@@ -9,6 +9,7 @@
 #include "face/frame_selection.h"
 #include "face/detector.h"
 #include "face/tracker.h"
+#include "face/multitracker.h"
 #include "face/merging.h"
 #include "face/annotator.h"
 
@@ -18,9 +19,11 @@ private:
     FacePreprocessor _preprocessor;
     FaceFrameSelection _selector;
     FaceDetector _detector;
-    FaceTracker _tracker;
+    //FaceTracker _tracker;
     FaceMerging _merging;
     FaceAnnotator _annotator;
+
+    Multitracker _tracker;
 
     std::vector<Detection> _detected;
     std::vector<TrackInfo> _tracked;

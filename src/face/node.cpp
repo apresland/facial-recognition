@@ -31,7 +31,7 @@ void FaceNode::spin_once()
         timeRecorder_.reset();
         timeRecorder_.start();
         std::cout
-            << " - id: " 
+            << " - frame id: " 
             << _frame_id << "\n";
     }
 
@@ -66,10 +66,16 @@ void FaceNode::spin_once()
     // Track faces in frame
     // ----------------------------------------------
 
+    if ( ! _detected.empty()) {
+        for (auto detection : _detected) {
+            _tracker
+                .add(preprocessed, detection);
+        }
+    }
+
     _tracker
         .trackAsync(
-            preprocessed,
-            _detected);
+            preprocessed);
 
     // ----------------------------------------------
     // Merge face detections
@@ -113,9 +119,9 @@ void FaceNode::spin_once()
     if (gLOGMAIN) {
         timeRecorder_.stop();
         std::cout 
-            << " - total time: "
+            << " - processing time: "
             << timeRecorder_.getTimeMilli()
-            << "ms ("
+            << "ms (detection = "
             << detect_more_faces
             << ")" 
             << std::endl;
