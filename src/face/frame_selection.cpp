@@ -8,7 +8,7 @@ bool FaceFrameSelection::select(const int frame_id)
 
     bool is_selected 
         = frames_since_last_detection
-            >= detector_step_;
+            >= DETECTOR_STEP;
 
     if (is_selected) {
         detector_frame_id_ = frame_id;

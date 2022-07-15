@@ -1,9 +1,9 @@
 #include "face/merging.h"
 
-std::vector<DetectionsDescr> FaceMerging::merge(std::vector<Detection> detections, 
+std::vector<DetectionDescr> FaceMerging::merge(std::vector<Detection> detections, 
                                                 std::vector<TrackInfo> track_infos) 
 {
-    std::vector<DetectionsDescr> merged;
+    std::vector<DetectionDescr> merged;
 
     if ( ! detections.empty()) {
 
@@ -13,7 +13,7 @@ std::vector<DetectionsDescr> FaceMerging::merge(std::vector<Detection> detection
         }
 
         for (const auto & detection : detections) {
-            DetectionsDescr descriptor;
+            DetectionDescr descriptor;
             descriptor.track_id = track_id;
             descriptor.rectangle = detection.rectangle;
             descriptor.score = detection.score;
@@ -21,7 +21,7 @@ std::vector<DetectionsDescr> FaceMerging::merge(std::vector<Detection> detection
         }
     } else {    
         for (const auto & info : track_infos) {
-            DetectionsDescr descriptor;
+            DetectionDescr descriptor;
             descriptor.track_id = info.track_id;
             descriptor.rectangle = info.rectangle;
             descriptor.score = info.score;

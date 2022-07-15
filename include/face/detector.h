@@ -17,8 +17,6 @@ private:
     const double scale_factor_{1.0};
     /// Mean normalization values network was trained with  
     const cv::Scalar mean_values_{104.0, 177.0, 123.0};
-    /// Face detection confidence threshold
-    const float confidence_threshold_ {0.5f};
     /// Face detection future (async)
     std::future<std::vector<Detection>> detections_future_;
     /// Benchmarking timer

@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
     src/face/frame_selection.cpp 
     src/face/detector.cpp 
     src/face/tracker.cpp 
+    src/face/track_observer.cpp 
     src/face/multitracker.cpp  
     src/face/merging.cpp 
     src/face/annotator.cpp 

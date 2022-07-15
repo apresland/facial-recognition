@@ -17,11 +17,12 @@ struct Detection
     float score{0.f};
 };
 
-struct DetectionsDescr
+struct DetectionDescr
 {
     TrackId track_id;
     cv::Rect2d rectangle;
     float score{0.f};
+    bool is_full_detection{false};
 };
 
 struct TrackInfo
@@ -31,7 +32,7 @@ struct TrackInfo
     float score{0.f};
 };
 
-enum TrackState {
+enum class TrackState : uint8_t {
     ACTIVE,
     SKIPPED,
     TERMINATED

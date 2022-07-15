@@ -64,7 +64,7 @@ std::vector<Detection> FaceDetector::detect(const cv::Mat& frame)
     for (int i = 0; i < detection_matrix.rows; i++) {
 
         float confidence = detection_matrix.at<float>(i, 2);
-        if (confidence < confidence_threshold_) {
+        if (confidence < DETECTION_THRESHOLD) {
             continue;
         }
 
@@ -78,8 +78,6 @@ std::vector<Detection> FaceDetector::detect(const cv::Mat& frame)
         detection.rectangle = rectangle;
         detection.score = confidence;
         detections.emplace_back(detection);
-
-        //rectangles.emplace_back(xbl, ybl, (xtr - xbl), (ytr - ybl));
     }
     
     if (gLOGGING) {

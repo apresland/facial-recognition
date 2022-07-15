@@ -27,7 +27,7 @@ TrackState FaceTracker::track(const cv::Mat& frame, TrackInfo& track_info)
         timeRecorder_.start();
     }
 
-    if ( ++skip_frames_ > max_skip_frames_) {
+    if ( ++skip_frames_ > MAX_SKIP_FRAMES) {
         return TrackState::TERMINATED;
     }
 

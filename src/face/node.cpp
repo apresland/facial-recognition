@@ -10,12 +10,19 @@ FaceNode::FaceNode(std::queue<cv::Mat>& input,
                    std::queue<cv::Mat>& output) 
     : _image_input(input)
     , _image_output(output)
-{}
+{
+    _preprocessor = std::make_unique<FacePreprocessor>();
+    _selector = std::make_unique<FaceFrameSelection>();
+    _detector = std::make_unique<FaceDetector>();
+    _merging = std::make_unique<FaceMerging>();
+    _annotator = std::make_unique<FaceAnnotator>();
+    _tracker = std::make_unique<Multitracker>(_track_observer);
+}
 
 void FaceNode::spin_once()
 {
     if (_image_input.empty()) {
-        return; //continue;
+        return;
     }
 
     ++_frame_id;
@@ -41,7 +48,7 @@ void FaceNode::spin_once()
 
     bool detect_more_faces 
         = _selector
-            .select(
+            ->select(
                 _frame_id);
 
     // ------------------------------------------------
@@ -50,7 +57,7 @@ void FaceNode::spin_once()
 
     cv::Mat preprocessed
         = _preprocessor
-            .preprocess(frame);
+            ->preprocess(frame);
 
     // -------------------------------------------------
     // Detect faces in frame
@@ -58,7 +65,7 @@ void FaceNode::spin_once()
     
     if(detect_more_faces) {
         _detector
-            .detectAsync(
+            ->detectAsync(
                 preprocessed);
     } 
 
@@ -69,12 +76,12 @@ void FaceNode::spin_once()
     if ( ! _detected.empty()) {
         for (auto detection : _detected) {
             _tracker
-                .add(preprocessed, detection);
+                ->add(preprocessed, detection);
         }
     }
 
     _tracker
-        .trackAsync(
+        ->trackAsync(
             preprocessed);
 
     // ----------------------------------------------
@@ -85,17 +92,17 @@ void FaceNode::spin_once()
     if(detect_more_faces) {
         _detected
             = _detector
-                .getAsync();
+                ->getAsync();
     }
 
     _tracked.clear();
     _tracked 
         = _tracker
-            .getAsync();
+            ->getAsync();
 
-    std::vector<DetectionsDescr> merged
+    std::vector<DetectionDescr> merged
         = _merging
-            .merge(
+            ->merge(
                 _detected,
                 _tracked);
 
@@ -105,7 +112,7 @@ void FaceNode::spin_once()
 
     auto annotated_frame
         = _annotator
-            .annotate(
+            ->annotate(
                 frame,
                 merged);
 

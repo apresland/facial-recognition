@@ -1,36 +1,34 @@
 #pragma once
 
+#include <memory>
 #include<queue>
 #include <vector>
-
 #include <opencv2/core.hpp>
-
 #include "face/preprocessor.h"
 #include "face/frame_selection.h"
 #include "face/detector.h"
 #include "face/tracker.h"
 #include "face/multitracker.h"
+#include "face/track_observer.h"
 #include "face/merging.h"
 #include "face/annotator.h"
 
 class FaceNode {
 
 private:
-    FacePreprocessor _preprocessor;
-    FaceFrameSelection _selector;
-    FaceDetector _detector;
-    //FaceTracker _tracker;
-    FaceMerging _merging;
-    FaceAnnotator _annotator;
-
-    Multitracker _tracker;
-
+    TrackObserver _track_observer;
+    std::unique_ptr<FacePreprocessor> _preprocessor;
+    std::unique_ptr<FaceFrameSelection> _selector;
+    std::unique_ptr<FaceDetector> _detector;
+    std::unique_ptr<FaceMerging> _merging;
+    std::unique_ptr<FaceAnnotator> _annotator;
+    std::unique_ptr<Multitracker> _tracker;
     std::vector<Detection> _detected;
     std::vector<TrackInfo> _tracked;
-    cv::TickMeter timeRecorder_;
     int _frame_id{0};
 
 private:
+    cv::TickMeter timeRecorder_;
     std::queue<cv::Mat>& _image_input;
     std::queue<cv::Mat>& _image_output;
 

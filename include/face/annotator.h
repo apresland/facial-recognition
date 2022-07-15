@@ -12,5 +12,5 @@ private:
 public:
     FaceAnnotator() = default;
     ~FaceAnnotator() = default;
-    cv::Mat annotate(const cv::Mat& input, std::vector<DetectionsDescr>& detections);
+    cv::Mat annotate(const cv::Mat& input, std::vector<DetectionDescr>& detections);
 };

@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 
 
-cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<DetectionsDescr>& detections)
+cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<DetectionDescr>& detections)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -54,7 +54,7 @@ cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<DetectionsDesc
         cv::putText(
             output, description_text,
             cv::Point(detection.rectangle.x,
-                      detection.rectangle.y), //detection.rectangle.y + detection.rectangle.height/2),
+                      detection.rectangle.y),
             cv::FONT_HERSHEY_SIMPLEX, 1,
             cv::Scalar(255, 255, 255), 2);
     }

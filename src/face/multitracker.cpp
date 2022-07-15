@@ -1,14 +1,13 @@
 #include "face/multitracker.h"
 
-
 void Multitracker::add(const cv::Mat& frame, Detection& detection)
 {  
     // ---------------------------------------
     // try to match to existing tracked object
     // ---------------------------------------
 
-    double iou_max = 0.0;
-    uint32_t imax;
+    float iou_max = 0.0;
+    uint32_t matched_tracker_key;
     for (const auto & object : objects) {
 
         // calculate IoU metric
@@ -19,7 +18,7 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
         // check best match
         if (iou > iou_max) {
             iou_max = iou;
-            imax = object.first;
+            matched_tracker_key = object.first;
         }
     } 
 
@@ -27,8 +26,8 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
     // if match found reinitialize tracker
     // ---------------------------------------
 
-    if (iou_max >= 0.10) {
-        trackers[imax]
+    if (iou_max >= REQUIRED_IOU_FOR_MATCH) {
+        trackers[matched_tracker_key]
             ->init(
                 frame, detection);
         return;   
@@ -83,9 +82,14 @@ std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame)
 
         case TrackState::TERMINATED:
             objects
-                .erase(tracker_key);
+                .erase(
+                    tracker_key);
             eviction_list
-                .push_back(tracker_key);
+                .push_back(
+                    tracker_key);
+            observer_
+                .trackEnd(
+                    track_info.track_id);
             break;
 
         case TrackState::SKIPPED:
@@ -126,6 +130,5 @@ double Multitracker::intersection_over_union(cv::Rect2d r1, cv::Rect2d r2)
 	double areaR2 = r2.width * r2.height;
     double areaR3 = r3.width * r3.height;
 
-    double IoU = areaR3 / (areaR1 + areaR2 - areaR3);
-    return IoU;
+    return (areaR3 / (areaR1 + areaR2 - areaR3));
 }

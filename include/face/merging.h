@@ -12,6 +12,6 @@ private:
 public:
     FaceMerging() = default;
     ~FaceMerging() = default;
-    std::vector<DetectionsDescr> merge(std::vector<Detection> detected, 
+    std::vector<DetectionDescr> merge(std::vector<Detection> detected, 
                                        std::vector<TrackInfo> tracked);
 };

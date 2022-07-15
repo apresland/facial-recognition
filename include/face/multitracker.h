@@ -1,7 +1,9 @@
 #pragma once
 
+#include "face/context.h"
 #include "face/types.h"
 #include "face/tracker.h"
+#include "face/track_observer.h"
 #include <future>
 #include <thread>
 #include <vector>
@@ -14,8 +16,10 @@ private:
     std::future<std::vector<TrackInfo>> detections_future_;
     std::unordered_map<uint32_t, std::unique_ptr<FaceTracker>> trackers;
     std::unordered_map<uint32_t, cv::Rect2d> objects;
+    ITrackObserver& observer_;
     uint32_t current_track_id_{0};
 public:
+    explicit Multitracker::Multitracker(ITrackObserver& observer) : observer_(observer) {}
     void add(const cv::Mat& frame, Detection& detection);
     std::vector<TrackInfo> track(const cv::Mat& frame);
     void trackAsync(const cv::Mat& frame);
