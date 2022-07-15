@@ -2,17 +2,25 @@
 
 #include <iostream>
 
-void TrackObserver::bestShot(const DetectionDescr& descr)
+void TrackObserver::trackStart(const TrackId& track_id)
 {
     std::cout 
-        << " - TrackObserver::bestShot:\n" 
-        << "   >> TrackId: " << descr.track_id << "\n"
-        << "   >> Rectangle: " << descr.rectangle.width << " x " << descr.rectangle.height << "\n";
+        << " - TrackObserver::trackStart:\n" 
+        << "   >> track_id: " << track_id<< "\n";
 }
 
 void TrackObserver::trackEnd(const TrackId& track_id)
 {
     std::cout 
         << " - TrackObserver::trackEnd:\n" 
-        << "   >> TrackId: " << track_id<< "\n";
+        << "   >> track_id: " << track_id<< "\n";
+}
+
+void TrackObserver::bestShot(const DetectionDescr& descr)
+{
+    std::cout 
+        << " - TrackObserver::bestShot:\n" 
+        << "   >> track_id: " << descr.track_id << "\n"
+        << "   >> rectangle: " << descr.rectangle.width << " x " << descr.rectangle.height << "\n"
+        << "   >> score: " << descr.score << "\n";
 }

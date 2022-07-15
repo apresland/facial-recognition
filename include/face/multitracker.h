@@ -14,10 +14,11 @@ class Multitracker
 {
 private:
     std::future<std::vector<TrackInfo>> detections_future_;
-    std::unordered_map<uint32_t, std::unique_ptr<FaceTracker>> trackers;
-    std::unordered_map<uint32_t, cv::Rect2d> objects;
-    ITrackObserver& observer_;
+    std::unordered_map<uint32_t, std::unique_ptr<FaceTracker>> trackers_;
+    std::unordered_map<uint32_t, cv::Rect2d> objects_;
+    std::unordered_map<uint32_t, float> scores_;
     uint32_t current_track_id_{0};
+    ITrackObserver& observer_;
 public:
     explicit Multitracker::Multitracker(ITrackObserver& observer) : observer_(observer) {}
     void add(const cv::Mat& frame, Detection& detection);

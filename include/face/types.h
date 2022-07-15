@@ -22,7 +22,6 @@ struct DetectionDescr
     TrackId track_id;
     cv::Rect2d rectangle;
     float score{0.f};
-    bool is_full_detection{false};
 };
 
 struct TrackInfo

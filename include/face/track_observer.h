@@ -5,8 +5,9 @@
 class ITrackObserver 
 {
 public:
-    virtual void bestShot(const DetectionDescr& descr) = 0;
+    virtual void trackStart(const TrackId& trackId) = 0;
     virtual void trackEnd(const TrackId& trackId) = 0;
+    virtual void bestShot(const DetectionDescr& descr) = 0;
 };
 
 class TrackObserver : public ITrackObserver
@@ -17,8 +18,9 @@ public:
     TrackObserver() = default;
     ~TrackObserver() = default;
 
-    void bestShot(const DetectionDescr& descr) override;
+    void trackStart(const TrackId& trackId) override;
     void trackEnd(const TrackId& track_id) override;
+    void bestShot(const DetectionDescr& descr) override;
 };
 
 

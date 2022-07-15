@@ -8,7 +8,7 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
 
     float iou_max = 0.0;
     uint32_t matched_tracker_key;
-    for (const auto & object : objects) {
+    for (const auto & object : objects_) {
 
         // calculate IoU metric
         auto iou = intersection_over_union(
@@ -27,7 +27,21 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
     // ---------------------------------------
 
     if (iou_max >= REQUIRED_IOU_FOR_MATCH) {
-        trackers[matched_tracker_key]
+
+        if (detection.score 
+                > scores_[matched_tracker_key]) {
+            scores_[matched_tracker_key] 
+                = detection.score;
+            DetectionDescr descr;
+            descr.track_id = matched_tracker_key;
+            descr.rectangle = detection.rectangle;
+            descr.score = detection.score;
+            observer_
+                .bestShot(
+                    descr);   
+        }
+
+        trackers_[matched_tracker_key]
             ->init(
                 frame, detection);
         return;   
@@ -39,17 +53,34 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
 
     ++current_track_id_;
 
-    trackers[current_track_id_]
+    trackers_[current_track_id_]
         = std::unique_ptr<FaceTracker>(
             new FaceTracker(current_track_id_)
             );
 
-    objects
+    objects_
         .insert(
             {current_track_id_, detection.rectangle}
             );
 
-    return trackers[current_track_id_]
+    scores_
+        .insert( 
+            {current_track_id_, detection.score}
+            );
+
+    observer_
+        .trackStart(
+            current_track_id_);
+
+    DetectionDescr descr;
+    descr.track_id = current_track_id_;
+    descr.rectangle = detection.rectangle;
+    descr.score = detection.score;
+    observer_
+        .bestShot(
+            descr);   
+
+    return trackers_[current_track_id_]
         ->init(
             frame, detection);
 }
@@ -59,7 +90,7 @@ std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame)
     std::vector<uint32_t> eviction_list;
     std::vector<TrackInfo> track_infos;
 
-    for(const auto & item : trackers) {
+    for(const auto & item : trackers_) {
 
         uint32_t tracker_key = item.first;
         const auto & tracker = item.second;
@@ -76,20 +107,20 @@ std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame)
         case TrackState::ACTIVE:
             track_infos
                 .push_back(track_info);
-            objects[tracker_key]
+            objects_[tracker_key]
                 = track_info.rectangle;
             break;
 
         case TrackState::TERMINATED:
-            objects
+            observer_
+                .trackEnd(
+                    track_info.track_id);
+            objects_
                 .erase(
                     tracker_key);
             eviction_list
                 .push_back(
                     tracker_key);
-            observer_
-                .trackEnd(
-                    track_info.track_id);
             break;
 
         case TrackState::SKIPPED:
@@ -102,7 +133,7 @@ std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame)
     }
 
     for (const auto & key : eviction_list) {
-        trackers.erase(key);
+        trackers_.erase(key);
     }
 
     return track_infos;
