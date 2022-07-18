@@ -38,6 +38,7 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
             descr.score = detection.score;
             observer_
                 .bestShot(
+                    frame,
                     descr);   
         }
 
@@ -78,6 +79,7 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
     descr.score = detection.score;
     observer_
         .bestShot(
+            frame,
             descr);   
 
     return trackers_[current_track_id_]
@@ -89,6 +91,10 @@ std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame)
 {
     std::vector<uint32_t> eviction_list;
     std::vector<TrackInfo> track_infos;
+
+    //observer_
+    //    .current_frame_ptr_
+    //        = &frame;
 
     for(const auto & item : trackers_) {
 

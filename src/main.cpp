@@ -73,9 +73,9 @@ int main()
 
         if ( ! _image_output.empty()) {
             cv::Mat annotated = _image_output.front();
+            _image_output.pop();
             video.write(annotated);
             cv::imshow("detections", annotated);
-            _image_output.pop();
         }
         // ----------------------------------------------
         // Check for quit signal
