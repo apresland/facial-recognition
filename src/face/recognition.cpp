@@ -32,19 +32,20 @@ void Recognition::trackEnd(const TrackId& track_id)
 
 void Recognition::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
 {
-    std::cout 
-        << " - Recognition::bestShot:\n" 
-        << "   >> track_id: " << descr.track_id << "\n"
-        << "   >> rectangle: " << descr.rectangle.width 
-                      << " x " << descr.rectangle.height << "\n"
-        << "   >> score: " << descr.score << "\n";
+    // -------------------------------------------------------
+    // Extract landmarks from detected face
+    // -------------------------------------------------------
 
-    cv::Rect mask
+    cv::Rect detection
         = descr.rectangle;
 
     std::vector<cv::Point2i> landmarks 
         = recognizer_
-            ->recognize(frame, mask);
+            ->recognize(frame, detection);
+
+    // -------------------------------------------------------
+    // Output to filesystem for quality checking
+    // -------------------------------------------------------
 
     for (const auto & landmark : landmarks) {
         cv::circle(frame, landmark, 2, cv::Scalar(0,255,0), 1);

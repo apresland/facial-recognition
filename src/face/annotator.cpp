@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 
 
-cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<DetectionDescr>& detections)
+cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<TrackInfo>& track_infos)
 {
     if (gLOGGING) {
         timeRecorder_.reset();
@@ -27,6 +27,15 @@ cv::Mat FaceAnnotator::annotate(const cv::Mat& input, std::vector<DetectionDescr
         font_scale, 
         font_thickness,
         &font_baseline);
+
+    std::vector<DetectionDescr> detections;
+    for (const auto & info : track_infos) {
+        DetectionDescr descriptor;
+        descriptor.track_id = info.track_id;
+        descriptor.rectangle = info.rectangle;
+        descriptor.score = info.score;
+        detections.push_back(descriptor);
+    }
 
     for (const auto & detection : detections) {
 
