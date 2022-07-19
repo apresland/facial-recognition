@@ -36,12 +36,12 @@ void Recognition::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
     // Extract landmarks from detected face
     // -------------------------------------------------------
 
-    cv::Rect detection
+    cv::Rect mask
         = descr.rectangle;
 
-    std::vector<cv::Point2i> landmarks 
+    std::vector<cv::Point2f> landmarks 
         = recognizer_
-            ->recognize(frame, detection);
+            ->recognize(frame, mask);
 
     // -------------------------------------------------------
     // Output to filesystem for quality checking

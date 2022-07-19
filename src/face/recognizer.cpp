@@ -4,7 +4,7 @@
 
 static cv::Rect dlibRectangleToOpenCV(dlib::rectangle r)
 {
-  return cv::Rect(cv::Point2i(r.left(), r.top()), cv::Point2i(r.right() + 1, r.bottom() + 1));
+  return cv::Rect(cv::Point2f(r.left(), r.top()), cv::Point2f(r.right() + 1, r.bottom() + 1));
 }
 
 static dlib::rectangle openCVRectToDlib(cv::Rect r)
@@ -19,7 +19,7 @@ Recognizer::Recognizer()
             >> predictor_;    
 }
 
-std::vector<cv::Point2i> Recognizer::recognize(const cv::Mat& frame, const cv::Rect& rect)
+std::vector<cv::Point2f> Recognizer::recognize(const cv::Mat& frame, const cv::Rect& rect)
 {
     dlib::cv_image<dlib::bgr_pixel>
         img(frame);
@@ -33,9 +33,9 @@ std::vector<cv::Point2i> Recognizer::recognize(const cv::Mat& frame, const cv::R
     unsigned long num_parts 
         = shape.num_parts();
 
-    std::vector<cv::Point2i> landmarks;
+    std::vector<cv::Point2f> landmarks;
     for (unsigned long i = 0; i < num_parts; i++) {
-        cv::Point2i landmark;
+        cv::Point2f landmark;
         landmark.x = shape.part(i).x();
         landmark.y = shape.part(i).y();
         landmarks.push_back(landmark);

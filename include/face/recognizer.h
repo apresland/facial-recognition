@@ -14,5 +14,5 @@ public:
     explicit Recognizer();
     ~Recognizer() = default;
 
-    std::vector<cv::Point2i> recognize(const cv::Mat& frame, const cv::Rect& rect);
+    std::vector<cv::Point2f> recognize(const cv::Mat& frame, const cv::Rect& rect);
 };
