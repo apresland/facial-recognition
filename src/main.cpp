@@ -48,7 +48,9 @@ int main()
         cv::Mat frame;
         cap >> frame;
 
-        _image_input.push(frame(mask));
+        _image_input.push(
+            frame(mask)
+            );
 
         // ----------------------------------------------
         // Log frame info

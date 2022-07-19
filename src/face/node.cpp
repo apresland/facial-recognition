@@ -1,5 +1,6 @@
 #include "face/node.h"
 #include "face/context.h"
+#include "face/recognition.h"
 
 #include <iostream>
 
@@ -11,12 +12,14 @@ FaceNode::FaceNode(std::queue<cv::Mat>& input,
     : _image_input(input)
     , _image_output(output)
 {
+
+    _track_observer = std::make_unique<Recognition>();
     _preprocessor = std::make_unique<FacePreprocessor>();
     _selector = std::make_unique<FaceFrameSelection>();
     _detector = std::make_unique<FaceDetector>();
     _merging = std::make_unique<FaceMerging>();
     _annotator = std::make_unique<FaceAnnotator>();
-    _tracker = std::make_unique<Multitracker>(_track_observer);
+    _tracker = std::make_unique<Multitracker>(*_track_observer);
 }
 
 void FaceNode::spin_once()

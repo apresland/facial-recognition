@@ -1,33 +1,39 @@
-#include "face/track_observer.h"
+#include "face/recognition.h"
+#include "face/recognizer.h"
 
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <experimental/filesystem>
 #include <iostream>
 
-TrackObserver::TrackObserver () 
+Recognition::Recognition()
 {
-    recognition_
-        = std::make_unique<Recognition>();
+    recognizer_
+        = std::make_unique<Recognizer>();
 }
 
-void TrackObserver::trackStart(const TrackId& track_id)
+Recognition::~Recognition()
+{
+}
+
+void Recognition::trackStart(const TrackId& track_id)
 {
     std::cout 
-        << " - TrackObserver::trackStart:\n" 
+        << " - Recognition::trackStart:\n" 
         << "   >> track_id: " << track_id<< "\n";
 }
 
-void TrackObserver::trackEnd(const TrackId& track_id)
+void Recognition::trackEnd(const TrackId& track_id)
 {
     std::cout 
-        << " - TrackObserver::trackEnd:\n" 
+        << " - Recognition::trackEnd:\n" 
         << "   >> track_id: " << track_id<< "\n";
 }
 
-void TrackObserver::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
+void Recognition::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
 {
     std::cout 
-        << " - TrackObserver::bestShot:\n" 
+        << " - Recognition::bestShot:\n" 
         << "   >> track_id: " << descr.track_id << "\n"
         << "   >> rectangle: " << descr.rectangle.width 
                       << " x " << descr.rectangle.height << "\n"
@@ -37,11 +43,11 @@ void TrackObserver::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
         = descr.rectangle;
 
     std::vector<cv::Point2i> landmarks 
-        = recognition_
+        = recognizer_
             ->recognize(frame, mask);
 
     for (const auto & landmark : landmarks) {
-        cv::circle(frame, landmark, 3, cv::Scalar(0,255,0), 2);
+        cv::circle(frame, landmark, 2, cv::Scalar(0,255,0), 1);
     }
 
     cv::Mat detection 
@@ -54,7 +60,11 @@ void TrackObserver::bestShot(const cv::Mat& frame, const DetectionDescr& descr)
     filename << "detections/" 
         << descr.track_id << "_detection_" 
         << descr.score << ".png";
+
     cv::imwrite(
         filename.str(),
         detection);
 }
+
+
+

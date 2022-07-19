@@ -1,6 +1,6 @@
 #include "face/multitracker.h"
 
-void Multitracker::add(const cv::Mat& frame, Detection& detection)
+void Multitracker::add(const cv::Mat& preprocessed_frame, Detection& detection)
 {  
     // ---------------------------------------
     // try to match to existing tracked object
@@ -38,13 +38,13 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
             descr.score = detection.score;
             observer_
                 .bestShot(
-                    frame,
+                    preprocessed_frame,
                     descr);   
         }
 
         trackers_[matched_tracker_key]
             ->init(
-                frame, detection);
+                preprocessed_frame, detection);
         return;   
     }
 
@@ -79,12 +79,12 @@ void Multitracker::add(const cv::Mat& frame, Detection& detection)
     descr.score = detection.score;
     observer_
         .bestShot(
-            frame,
+            preprocessed_frame,
             descr);   
 
     return trackers_[current_track_id_]
         ->init(
-            frame, detection);
+            preprocessed_frame, detection);
 }
 
 std::vector<TrackInfo> Multitracker::track(const cv::Mat& frame) 

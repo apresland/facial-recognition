@@ -12,19 +12,25 @@ add_executable(${PROJECT_NAME}
     src/face/preprocessor.cpp 
     src/face/frame_selection.cpp 
     src/face/detector.cpp 
+    src/face/recognition.cpp 
     src/face/tracker.cpp 
-    src/face/track_observer.cpp 
+    #src/face/track_observer.cpp 
+    src/face/recognizer.cpp 
     src/face/multitracker.cpp  
     src/face/merging.cpp 
     src/face/annotator.cpp 
     src/face/node.cpp)
 
+add_subdirectory(third_party/dlib)
+
 find_package(OpenCV CONFIG REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-#link_directories( ${OpenCV_LIB_DIR} )
+#find_package(DLIB CONFIG REQUIRED)
+#include_directories(${DLIB_INCLUDE_DIRECTORY})
 
-target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} dlib::dlib)
+#target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} ${DLIB_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 add_custom_command(TARGET face_detection POST_BUILD

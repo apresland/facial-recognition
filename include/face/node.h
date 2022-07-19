@@ -9,14 +9,14 @@
 #include "face/detector.h"
 #include "face/tracker.h"
 #include "face/multitracker.h"
-#include "face/track_observer.h"
 #include "face/merging.h"
 #include "face/annotator.h"
+#include "face/track_observer.h"
 
 class FaceNode {
 
 private:
-    TrackObserver _track_observer;
+    std::unique_ptr<ITrackObserver> _track_observer;
     std::unique_ptr<FacePreprocessor> _preprocessor;
     std::unique_ptr<FaceFrameSelection> _selector;
     std::unique_ptr<FaceDetector> _detector;

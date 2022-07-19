@@ -23,6 +23,16 @@ Install the opencv3 package (with extra contrib) for x64 architecture
 ```
 vcpkg.exe install opencv3[contrib]:x64-windows --recurse
 ```
+## Install the DLib package (19.23)
+Enter the vcpkg root to access the executable
+```
+chdir vcpkg
+```
+Install the dlib package for x64 architecture
+```
+vcpkg.exe install dlib:x64-windows --recurse
+```
+
 ## Build the project
 Navigate to the project root (where the CMakeLists.txt file is located) and initialize for x64 architecture
 ```
